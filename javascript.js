@@ -1,12 +1,9 @@
 $( document ).ready(function(){  
-	var linksModel = []; 
 
-
-	$.getJSON('http://localhost:8080/api/links', function(data){
-		var i = 0;
-		for(; i < data.length; i++){
-			$('#linksTable tr:last').after(getLinksTableRow(i+1, data[i].name)); 
-		}
+	$.getJSON('http://localhost:8080/api/links', function(result){
+		$.each(result, function(i, link){
+			$('#linksTable tr:last').after(getLinksTableRow(i+1, link.name)); 
+		});
 	});
 });
 
