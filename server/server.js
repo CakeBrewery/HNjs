@@ -2,43 +2,42 @@ var express = require('express');
 var app = express(); 
 var bodyParser = require('body-parser'); 
 
-//MySQL database configuration
-//--empty--
+var mysql = require('mysql'); 
+var connection = mysql.createConnection({
+    port: 3307,
+    host: 'localhost', 
+    user: 'hnjs', 
+    password: '', 
+    database: 'hnjs'
+});
 
-
+connection.connect(function(err){
+    if(!err){
+        console.log("Connected to MySQL..."); 
+    } else {
+        console.log("Error connectingn to database ... \n\n"); 
+    }
+});
 
 app.use(bodyParser.urlencoded({extended: true})); 
 app.use(bodyParser.json()); 
 
-
 var port = process.env.PORT || 8080; 
-
 var router = express.Router(); 
 
-
 router.get('/links', function(req, res){
-    var linksModel = []; 
+    connection.query('SELECT * FROM links;', function(err, rows, fields){
+        if(!err){
+            linksModel = []; 
+            rows.forEach(function(link){
+                linksModel.push(link); 
+            });
 
-    var link1 = {
-        name: 'Announcing Yet Another Hacker News Clone', 
-        link: '/' 
-    };
-
-    var link2 = {
-        name: 'Is this site going to be the next big thing?',
-        link: '/'
-    };
-
-    var link3 = {
-        name: 'Yet Another Pointless Article', 
-        link: '/'
-    };
-
-    linksModel.push(link1); 
-    linksModel.push(link2); 
-    linksModel.push(link3); 
-
-    res.json(linksModel); 
+            res.json(linksModel); 
+        }
+        else
+            console.log("Error querying for links"); 
+    });
 });
 
 app.all('/api/links', function(req, res, next) {
